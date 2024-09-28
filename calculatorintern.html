@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart-Shaped Calculator</title>
+  <style>
+    body {
+      background-color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 120vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .heart-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .heart {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      background-color: crimson;
+      transform: rotate(45deg);
+      margin-top: 50px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+      border: 5px solid transparent; /* Initial border */
+      transition: border-color 0.5s ease; /* Smooth transition for border color */
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: crimson;
+    }
+
+    .heart::before {
+      top: -100px;
+      left: 0;
+    }
+
+    .heart::after {
+      top: 0;
+      left: -100px;
+    }
+
+    .display-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      z-index: 2;
+      font-size: 36px;
+      color: white;
+      text-align: center;
+      width: 80%;
+      overflow-wrap: break-word;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(4, 70px);
+      grid-gap: 10px;
+      background: linear-gradient(135deg, #1d1f27, #3a3b45);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .calculator input[type="button"] {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      color: white;
+      background-color: #444;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .calculator input[type="button"]:hover {
+      background-color: #555;
+    }
+
+    .calculator input[type="button"]:active {
+      transform: scale(0.95);
+    }
+
+    .calculator input[type="text"] {
+      grid-column: span 4;
+      height: 50px;
+      text-align: right;
+      font-size: 24px;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #222;
+      color: white;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1) rotate(45deg);
+      }
+      50% {
+        transform: scale(1.05) rotate(45deg);
+      }
+      100% {
+        transform: scale(1) rotate(45deg);
+      }
+    }
+
+    @keyframes borderFlash {
+      0% {
+        border-color: transparent;
+      }
+      50% {
+        border-color: green;
+      }
+      100% {
+        border-color: transparent;
+      }
+    }
+
+    .heart.glow {
+      animation: borderFlash 1s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="heart-box">
+      <div id="heart" class="heart">
+        <div id="display" class="display-text">0</div>
+      </div>
+    </div>
+    <div class="keyboard-container">
+      <div class="calculator">
+        <input type="text" id="input-display" readonly>
+        <input type="button" value="AC" onclick="clearDisplay()">
+        <input type="button" value="DE" onclick="deleteLast()">
+        <input type="button" value="." onclick="appendValue('.')">
+        <input type="button" value="/" onclick="appendValue('/')">
+        <input type="button" value="7" onclick="appendValue('7')">
+        <input type="button" value="8" onclick="appendValue('8')">
+        <input type="button" value="9" onclick="appendValue('9')">
+        <input type="button" value="*" onclick="appendValue('*')">
+        <input type="button" value="4" onclick="appendValue('4')">
+        <input type="button" value="5" onclick="appendValue('5')">
+        <input type="button" value="6" onclick="appendValue('6')">
+        <input type="button" value="-" onclick="appendValue('-')">
+        <input type="button" value="1" onclick="appendValue('1')">
+        <input type="button" value="2" onclick="appendValue('2')">
+        <input type="button" value="3" onclick="appendValue('3')">
+        <input type="button" value="+" onclick="appendValue('+')">
+        <input type="button" value="0" onclick="appendValue('0')">
+        <input type="button" value="00" onclick="appendValue('00')">
+        <input type="button" value="000" onclick="appendValue('000')">
+        <input type="button" value="=" onclick="calculateResult()">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const inputDisplay = document.getElementById('input-display');
+    const heart = document.getElementById('heart');
+
+    function clearDisplay() {
+      inputDisplay.value = '';
+      display.textContent = '0';
+      heart.classList.remove('glow');
+    }
+
+    function deleteLast() {
+      inputDisplay.value = inputDisplay.value.slice(0, -1);
+      display.textContent = inputDisplay.value || '0';
+      heart.classList.remove('glow');
+    }
+
+    function appendValue(value) {
+      inputDisplay.value += value;
+      display.textContent = inputDisplay.value;
+      heart.classList.remove('glow');
+    }
+
+    function calculateResult() {
+      try {
+        const result = eval(inputDisplay.value);
+        inputDisplay.value = result;
+        display.textContent = result;
+        heart.classList.add('glow');
+      } catch (error) {
+        display.textContent = 'Error';
+        heart.classList.remove('glow');
+      }
+    }
+  </script>
+</body>
+</html>
